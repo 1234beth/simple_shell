@@ -1,2 +1,3 @@
-tasks on the simple shell 
-partners : Lilian and Elizabeth
+#.Tasks on the simple shell 
+#.Authors : Lilian and Elizabeth
+
