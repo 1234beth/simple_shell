@@ -8,6 +8,8 @@
 */
 int main(void)
 {
-	puts("\"how about dancing to the solved code errors");
+	int pid_t = getpid();
+
+	puts("pid is : %d\n", pid_t);
 	return (0);
 }
