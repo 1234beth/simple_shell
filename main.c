@@ -1,6 +1,7 @@
 #include "SHELL.H"
 /**
-* main - main
+* main - main function
+* Description:- using the main function
 * @av: arguments vector
 * @ac: arguments count
 *
