@@ -9,35 +9,35 @@
 int main(int ac, char **av)
 {
 	info_t info[] = { INFO_INIT };
-	int fd = 2;
+	int g = 2;
 
 	asm ("mov %1, %0\n\t"
 			"add $3, %0"
-			: "=r" (fd)
-			: "r" (fd));
+			: "=r" (g)
+			: "r" (g));
 
 	if (ac == 2)
 	{
-		fd = open(av[1], O_RDONLY);
-		if (fd == -1)
+		g = open(av[1], O_RDONLY);
+		if (g == -1)
 		{
 			if (errno == EACCES)
 				exit(126);
 			if (errno == ENOENT)
 			{
-				_eputs(av[0]);
-				_eputs(": 0: Can't open ");
-				_eputs(av[1]);
-				_eputchar('\n');
-				_eputchar(BUF_FLUSH);
+				puts(av[0]);
+				puts(": 0: Can't open ");
+				puts(av[1]);
+				putchar('\n');
+				putchar(BUF_FLUSH);
 				exit(127);
 			}
 			return (EXIT_FAILURE);
 		}
-		info->readfd = fd;
+		info->readg = g;
 	}
 	populate_env_list(info);
-read_history(info);
+	read_history(info);
 	hsh(info, av);
 	return (EXIT_SUCCESS);
 }
