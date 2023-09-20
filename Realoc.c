@@ -1,13 +1,15 @@
-#include "shell.h"
-
 /**
- * custom_memset - Fills memory with a constant byte.
- * @s: The pointer to the memory area.
- * @b: The byte to fill *s with.
- * @n: The amount of bytes to be filled.
- * Return: (s) a pointer to the memory area s.
+ * _memset - Fills a block of memory with a specified byte.
+ * @s: Pointer to the memory area to be filled.
+ * @b: The byte value to fill the memory with.
+ * @n: The number of bytes to be filled.
+ *
+ * This function sets the first 'n' bytes of the memory pointed to by 's' to the
+ * specified byte 'b'. It is commonly used to initialize or reset memory buffers.
+ *
+ * Return: A pointer to the memory area 's'.
  */
-char *custom_memset(char *s, char b, unsigned int n)
+char *_memset(char *s, char b, unsigned int n)
 {
     unsigned int i;
 
@@ -17,29 +19,38 @@ char *custom_memset(char *s, char b, unsigned int n)
 }
 
 /**
- * free_string_array - Frees a string array.
- * @str_array: String array to free.
+ * ffree - Frees an array of strings and the array itself.
+ * @pp: Pointer to the array of strings to be freed.
+ *
+ * This function releases the memory occupied by each individual string in the
+ * array 'pp' and then frees the memory used by the array itself. It is commonly
+ * used to deallocate memory associated with a dynamically allocated string array.
  */
-void free_string_array(char **str_array)
+void ffree(char **pp)
 {
-    char **temp = str_array;
+    char **a = pp;
 
-    if (!str_array)
+    if (!pp)
         return;
-    while (*str_array)
-        free(*str_array++);
-    free(temp);
+    while (*pp)
+        free(*pp++);
+    free(a);
 }
 
 /**
- * custom_realloc - Reallocates a block of memory.
- * @ptr: Pointer to the previous malloc'ed block.
- * @old_size: Byte size of the previous block.
- * @new_size: Byte size of the new block.
+ * _realloc - Reallocates a block of memory to a new size.
+ * @ptr: Pointer to the previously allocated memory block.
+ * @old_size: The original size (in bytes) of the memory block.
+ * @new_size: The new size (in bytes) for the memory block.
  *
- * Return: Pointer to the updated block.
+ * This function changes the size of the memory block pointed to by 'ptr' to
+ * 'new_size' bytes. It returns a pointer to the reallocated memory. If the new
+ * size is larger, the additional memory is uninitialized. If the new size is
+ * smaller, data may be truncated. If 'ptr' is NULL, it behaves like malloc.
+ *
+ * Return: A pointer to the reallocated memory block, or NULL on failure.
  */
-void *custom_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
+void *_realloc(void *ptr, unsigned int old_size, unsigned int new_size)
 {
     char *p;
 

@@ -1,151 +1,96 @@
 #include "shell.h"
 
 /**
- * string_to_int - Converts a string to an integer.
- * @s: The string to be converted.
+ * _eputs - Write a null-terminated string to the standard error (stderr).
+ * @str: The string to be printed.
  *
- * Return: The integer value if conversion is successful, -1 on error.
+ * This function iterates through the characters in the input string and writes
+ * them one by one to the standard error stream (stderr).
  */
-int string_to_int(char *s)
+void _eputs(char *str)
 {
     int i = 0;
-    unsigned long int result = 0;
 
-    if (*s == '+')
-        s++;
-    
-    for (i = 0; s[i] != '\0'; i++)
+    if (!str)
+        return;
+    while (str[i] != '\0')
     {
-        if (s[i] >= '0' && s[i] <= '9')
-        {
-            result *= 10;
-            result += (s[i] - '0');
-            if (result > INT_MAX)
-                return (-1);
-        }
-        else
-            return (-1);
+        _eputchar(str[i]);
+        i++;
     }
-    return (result);
 }
 
 /**
- * print_error_message - Prints an error message to standard error.
- * @info: Pointer to a struct containing shell information.
- * @error_type: The string containing the specified error type.
+ * _eputchar - Write a single character to the standard error (stderr).
+ * @c: The character to be written.
  *
- * Return: Nothing.
+ * This function writes the specified character to the standard error stream
+ * (stderr). It uses an internal buffer to accumulate characters before
+ * flushing to minimize system calls.
+ *
+ * Return: On success, 1 is returned. On error, -1 is returned, and errno is set.
  */
-void print_error_message(info_t *info, char *error_type)
+int _eputchar(char c)
 {
-    _eputs(info->fname);
-    _eputs(": ");
-    print_decimal(info->line_count, STDERR_FILENO);
-    _eputs(": ");
-    _eputs(info->argv[0]);
-    _eputs(": ");
-    _eputs(error_type);
+    static int i;
+    static char buf[WRITE_BUF_SIZE];
+
+    if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
+    {
+        if (write(2, buf, i) == -1)
+            return (-1);
+        i = 0;
+    }
+    if (c != BUF_FLUSH)
+        buf[i++] = c;
+    return (1);
 }
 
 /**
- * print_decimal - Prints a decimal (integer) number to the specified file descriptor.
- * @input: The integer to be printed.
+ * _putfd - Write a single character to the specified file descriptor.
+ * @c: The character to be written.
  * @fd: The file descriptor to write to.
  *
- * Return: The number of characters printed.
+ * This function writes the specified character to the provided file descriptor.
+ * It uses an internal buffer to accumulate characters before flushing to
+ * minimize system calls.
+ *
+ * Return: On success, 1 is returned. On error, -1 is returned, and errno is set.
  */
-int print_decimal(int input, int fd)
+int _putfd(char c, int fd)
 {
-    int (*output_char)(char) = _putchar;
-    int i, count = 0;
-    unsigned int abs_value, current;
+    static int i;
+    static char buf[WRITE_BUF_SIZE];
 
-    if (fd == STDERR_FILENO)
-        output_char = _eputchar;
-
-    if (input < 0)
+    if (c == BUF_FLUSH || i >= WRITE_BUF_SIZE)
     {
-        abs_value = -input;
-        output_char('-');
-        count++;
+        if (write(fd, buf, i) == -1)
+            return (-1);
+        i = 0;
     }
-    else
-    {
-        abs_value = input;
-    }
-    
-    current = abs_value;
-
-    for (i = 1000000000; i > 1; i /= 10)
-    {
-        if (abs_value / i)
-        {
-            output_char('0' + current / i);
-            count++;
-        }
-        current %= i;
-    }
-    
-    output_char('0' + current);
-    count++;
-
-    return (count);
+    if (c != BUF_FLUSH)
+        buf[i++] = c;
+    return (1);
 }
 
 /**
- * convert_to_string - Converts a number to a string.
- * @num: The number to be converted.
- * @base: The base for conversion.
- * @flags: Flags for conversion (CONVERT_UNSIGNED, CONVERT_LOWERCASE, etc.).
+ * _putsfd - Write a null-terminated string to the specified file descriptor.
+ * @str: The string to be printed.
+ * @fd: The file descriptor to write to.
  *
- * Return: A string representation of the number.
+ * This function iterates through the characters in the input string and uses
+ * `_putfd` to write them to the specified file descriptor. It returns the
+ * number of characters written.
  */
-char *convert_to_string(long int num, int base, int flags)
+int _putsfd(char *str, int fd)
 {
-    static char *array;
-    static char buffer[50];
-    char sign = 0;
-    char *ptr;
-    unsigned long n = num;
+    int i = 0;
 
-    if (!(flags & CONVERT_UNSIGNED) && num < 0)
+    if (!str)
+        return (0);
+    while (*str)
     {
-        n = -num;
-        sign = '-';
+        i += _putfd(*str++, fd);
     }
-
-    array = flags & CONVERT_LOWERCASE ? "0123456789abcdef" : "0123456789ABCDEF";
-    ptr = &buffer[49];
-    *ptr = '\0';
-
-    do
-    {
-        *--ptr = array[n % base];
-        n /= base;
-    } while (n != 0);
-
-    if (sign)
-        *--ptr = sign;
-
-    return (ptr);
-}
-
-/**
- * remove_comments - Replaces the first instance of '#' with '\0' in a string.
- * @buf: The address of the string to modify.
- *
- * Return: Nothing.
- */
-void remove_comments(char *buf)
-{
-    int i;
-
-    for (i = 0; buf[i] != '\0'; i++)
-    {
-        if (buf[i] == '#' && (!i || buf[i - 1] == ' '))
-        {
-            buf[i] = '\0';
-            break;
-        }
-    }
+    return (i);
 }

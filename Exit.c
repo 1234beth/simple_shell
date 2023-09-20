@@ -1,17 +1,20 @@
 #include "shell.h"
 
 /**
- * copy_string - Copies a string up to a specified length.
- * @dest: The destination string to be copied to.
- * @src: The source string.
+ * _strncpy - Copy a portion of a string to another string.
+ * @dest: The destination string to copy to.
+ * @src: The source string to copy from.
  * @n: The maximum number of characters to copy.
  *
- * Return: A pointer to the destination string.
+ * This function copies up to 'n' characters from the 'src' string to the 'dest'
+ * string. It returns a pointer to the 'dest' string.
+ *
+ * Return: A pointer to the 'dest' string.
  */
-char *copy_string(char *dest, char *src, int n)
+char *_strncpy(char *dest, char *src, int n)
 {
     int i, j;
-    char *result = dest;
+    char *s = dest;
 
     i = 0;
     while (src[i] != '\0' && i < n - 1)
@@ -28,21 +31,24 @@ char *copy_string(char *dest, char *src, int n)
             j++;
         }
     }
-    return result;
+    return (s);
 }
 
 /**
- * concatenate_strings - Concatenates two strings up to a specified length.
- * @dest: The first string.
- * @src: The second string.
- * @n: The maximum number of bytes to use.
+ * _strncat - Concatenate two strings up to a specified number of bytes.
+ * @dest: The destination string to concatenate to.
+ * @src: The source string to concatenate from.
+ * @n: The maximum number of bytes to concatenate.
  *
- * Return: A pointer to the concatenated string.
+ * This function concatenates up to 'n' bytes from the 'src' string to the 'dest'
+ * string. It returns a pointer to the 'dest' string.
+ *
+ * Return: A pointer to the 'dest' string.
  */
-char *concatenate_strings(char *dest, char *src, int n)
+char *_strncat(char *dest, char *src, int n)
 {
     int i, j;
-    char *result = dest;
+    char *s = dest;
 
     i = 0;
     j = 0;
@@ -56,23 +62,26 @@ char *concatenate_strings(char *dest, char *src, int n)
     }
     if (j < n)
         dest[i] = '\0';
-    return result;
+    return (s);
 }
 
 /**
- * find_character - Locates the first occurrence of a character in a string.
- * @s: The string to be searched.
+ * _strchr - Locate the first occurrence of a character in a string.
+ * @s: The string to search within.
  * @c: The character to look for.
  *
- * Return: A pointer to the first occurrence of the character in the string, or NULL if not found.
+ * This function searches for the first occurrence of the character 'c' in the
+ * string 's' and returns a pointer to the first matching character in 's'.
+ * If 'c' is not found, it returns NULL.
+ *
+ * Return: A pointer to the first occurrence of 'c' in 's', or NULL if not found.
  */
-char *find_character(char *s, char c)
+char *_strchr(char *s, char c)
 {
-    do
-    {
+    do {
         if (*s == c)
-            return s;
+            return (s);
     } while (*s++ != '\0');
 
-    return NULL;
+    return (NULL);
 }

@@ -1,25 +1,28 @@
 #include "shell.h"
 
 /**
- * display_environment - Displays the current environment variables.
- * @info: Pointer to a struct containing shell information.
- * 
+ * _myenv - Display the current environment variables.
+ * @info: Pointer to the info_t structure.
+ *
+ * This function prints the current environment variables in the format
+ * "VAR=VALUE" for each variable.
+ *
  * Return: Always returns 0.
  */
-int display_environment(info_t *info)
+int _myenv(info_t *info)
 {
     print_list_str(info->env);
     return (0);
 }
 
 /**
- * get_environment_variable - Gets the value of an environment variable.
- * @info: Pointer to a struct containing shell information.
- * @name: The name of the environment variable to retrieve.
+ * _getenv - Get the value of an environment variable.
+ * @info: Pointer to the info_t structure.
+ * @name: The name of the environment variable.
  *
- * Return: The value of the environment variable or NULL if not found.
+ * Return: The value of the environment variable if found, or NULL if not found.
  */
-char *get_environment_variable(info_t *info, const char *name)
+char *_getenv(info_t *info, const char *name)
 {
     list_t *node = info->env;
     char *p;
@@ -35,12 +38,15 @@ char *get_environment_variable(info_t *info, const char *name)
 }
 
 /**
- * set_environment_variable - Initializes a new environment variable or modifies an existing one.
- * @info: Pointer to a struct containing shell information.
- * 
+ * _mysetenv - Set or modify an environment variable.
+ * @info: Pointer to the info_t structure.
+ *
+ * This function initializes a new environment variable or modifies an
+ * existing one with the specified name and value.
+ *
  * Return: Always returns 0.
  */
-int set_environment_variable(info_t *info)
+int _mysetenv(info_t *info)
 {
     if (info->argc != 3)
     {
@@ -53,12 +59,15 @@ int set_environment_variable(info_t *info)
 }
 
 /**
- * unset_environment_variable - Removes an environment variable.
- * @info: Pointer to a struct containing shell information.
- * 
+ * _myunsetenv - Remove an environment variable.
+ * @info: Pointer to the info_t structure.
+ *
+ * This function removes one or more environment variables specified as
+ * arguments. It checks the number of arguments to ensure they are provided.
+ *
  * Return: Always returns 0.
  */
-int unset_environment_variable(info_t *info)
+int _myunsetenv(info_t *info)
 {
     int i;
 
@@ -67,19 +76,22 @@ int unset_environment_variable(info_t *info)
         _eputs("Too few arguments.\n");
         return (1);
     }
-    for (i = 1; i <= info->argc; i++)
+    for (i = 1; i < info->argc; i++)
         _unsetenv(info, info->argv[i]);
 
     return (0);
 }
 
 /**
- * populate_environment_list - Populates the environment linked list.
- * @info: Pointer to a struct containing shell information.
- * 
+ * populate_env_list - Populate the environment linked list.
+ * @info: Pointer to the info_t structure.
+ *
+ * This function populates the environment linked list with the current
+ * environment variables.
+ *
  * Return: Always returns 0.
  */
-int populate_environment_list(info_t *info)
+int populate_env_list(info_t *info)
 {
     list_t *node = NULL;
     size_t i;

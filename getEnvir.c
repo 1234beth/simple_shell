@@ -1,10 +1,14 @@
 #include "shell.h"
 
 /**
- * get_environ - Retrieves a copy of the environment variables.
+ * get_environ - Retrieve a copy of the environment variables.
  * @info: Pointer to the parameter struct.
  *
- * Return: Pointer to the environment variable strings.
+ * This function returns a string array copy of the shell's environment
+ * variables. If the environment has changed or is not yet stored, it
+ * updates and retrieves the latest version.
+ *
+ * Return: A string array representing the environment variables.
  */
 char **get_environ(info_t *info)
 {
@@ -18,11 +22,15 @@ char **get_environ(info_t *info)
 }
 
 /**
- * _unsetenv - Removes an environment variable.
+ * _unsetenv - Remove an environment variable.
  * @info: Pointer to the parameter struct.
- * @var: The environment variable property to unset.
+ * @var: The string representing the environment variable to remove.
  *
- * Return: 1 if variable is deleted, 0 otherwise.
+ * This function removes an environment variable specified by the "var"
+ * parameter from the environment list. It returns 1 if the variable is
+ * successfully deleted, or 0 if it does not exist.
+ *
+ * Return: 1 if the environment variable is deleted, 0 otherwise.
  */
 int _unsetenv(info_t *info, char *var)
 {
@@ -50,10 +58,15 @@ int _unsetenv(info_t *info, char *var)
 }
 
 /**
- * _setenv - Initializes a new environment variable or modifies an existing one.
+ * _setenv - Initialize a new environment variable or modify an existing one.
  * @info: Pointer to the parameter struct.
- * @var: The environment variable property to set.
- * @value: The value to assign to the environment variable.
+ * @var: The string representing the environment variable name.
+ * @value: The string representing the environment variable value.
+ *
+ * This function initializes a new environment variable or modifies an
+ * existing one with the provided name and value. If the variable already
+ * exists, it updates the value. If it doesn't exist, it creates a new
+ * environment variable.
  *
  * Return: Always 0.
  */

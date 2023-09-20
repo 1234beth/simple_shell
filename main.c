@@ -1,44 +1,63 @@
 #include "shell.h"
 
 /**
- * main - Entry point of the shell program.
- * @ac: Argument count.
- * @av: Argument vector.
+ * main - Entry point for the shell program.
+ * @argc: Number of command-line arguments.
+ * @argv: Array of command-line argument strings.
  *
  * Return: 0 on success, 1 on error.
  */
-int main(int ac, char **av)
+int main(int argc, char **argv)
 {
-    info_t info[] = { INFO_INIT };
+    // Initialize an array of info_t structures to store shell-related information.
+    info_t info[] = {INFO_INIT};
+
+    // File descriptor for standard error (stderr).
     int fd = 2;
 
-    asm ("mov %1, %0\n\t"
-            "add $3, %0"
-            : "=r" (fd)
-            : "r" (fd));
+    // Perform some arithmetic operations on the file descriptor (fd).
+    // The purpose and outcome of this assembly code may require additional context.
 
-    if (ac == 2)
+    // Check if a command-line argument is provided.
+    if (argc == 2)
     {
-        fd = open(av[1], O_RDONLY);
+        // Attempt to open the specified file in read-only mode.
+        fd = open(argv[1], O_RDONLY);
+
+        // Check if the file open operation failed.
         if (fd == -1)
         {
+            // Handle different error cases based on errno values.
             if (errno == EACCES)
-                exit(126);
+                exit(126); // Exit with status 126 for permission denied.
             if (errno == ENOENT)
             {
-                _eputs(av[0]);
+                // Print an error message and exit with status 127 if the file doesn't exist.
+                _eputs(argv[0]);
                 _eputs(": 0: Can't open ");
-                _eputs(av[1]);
+                _eputs(argv[1]);
                 _eputchar('\n');
                 _eputchar(BUF_FLUSH);
                 exit(127);
             }
-            return (EXIT_FAILURE);
+
+            // Return EXIT_FAILURE for other file open errors.
+            return EXIT_FAILURE;
         }
+
+        // Set the readfd field in the info structure to the opened file descriptor.
         info->readfd = fd;
     }
-    populateEnvironmentList(info);
-    readShellHistory(info);
-    runShell(info, av);
-    return (EXIT_SUCCESS);
+
+    // Populate the environment variable list in the info structure.
+    populate_env_list(info);
+
+    // Read the shell's command history from a file.
+    read_history(info);
+
+    // Enter the main shell loop (hsh function) for user interaction.
+    hsh(info, argv);
+
+    // Return EXIT_SUCCESS on successful execution.
+    return EXIT_SUCCESS;
 }

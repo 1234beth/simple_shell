@@ -1,12 +1,14 @@
 #include "shell.h"
 
 /**
- * listLength - Determines the length of a linked list.
+ * list_len - Determines the length of a linked list.
  * @h: Pointer to the first node.
  *
- * Return: Size of the list.
+ * This function counts the number of nodes in the linked list.
+ *
+ * Return: Size of the linked list.
  */
-size_t listLength(const list_t *h)
+size_t list_len(const list_t *h)
 {
     size_t i = 0;
 
@@ -15,27 +17,33 @@ size_t listLength(const list_t *h)
         h = h->next;
         i++;
     }
+
     return (i);
 }
 
 /**
- * listToStrings - Returns an array of strings containing the list->str values.
+ * list_to_strings - Converts a linked list of strings into an array of strings.
  * @head: Pointer to the first node.
  *
- * Return: Array of strings.
+ * This function takes a linked list of strings and converts it into an array
+ * of strings.
+ *
+ * Return: An array of strings or NULL on failure.
  */
-char **listToStrings(list_t *head)
+char **list_to_strings(list_t *head)
 {
     list_t *node = head;
-    size_t i = listLength(head), j;
+    size_t i = list_len(head), j;
     char **strs;
     char *str;
 
     if (!head || !i)
         return (NULL);
+
     strs = malloc(sizeof(char *) * (i + 1));
     if (!strs)
         return (NULL);
+
     for (i = 0; node; node = node->next, i++)
     {
         str = malloc(_strlen(node->str) + 1);
@@ -50,23 +58,26 @@ char **listToStrings(list_t *head)
         str = _strcpy(str, node->str);
         strs[i] = str;
     }
+
     strs[i] = NULL;
     return (strs);
 }
 
 /**
- * printList - Prints all elements of a list_t linked list.
+ * print_list - Prints all elements of a list_t linked list.
  * @h: Pointer to the first node.
+ *
+ * This function prints the elements of the linked list, including node numbers.
  *
  * Return: Size of the list.
  */
-size_t printList(const list_t *h)
+size_t print_list(const list_t *h)
 {
     size_t i = 0;
 
     while (h)
     {
-        _puts(convertNumber(h->num, 10, 0));
+        _puts(convert_number(h->num, 10, 0));
         _putchar(':');
         _putchar(' ');
         _puts(h->str ? h->str : "(nil)");
@@ -74,39 +85,47 @@ size_t printList(const list_t *h)
         h = h->next;
         i++;
     }
+
     return (i);
 }
 
 /**
- * nodeStartsWith - Returns a node whose string starts with a prefix.
+ * node_starts_with - Finds a node whose string starts with a given prefix.
  * @node: Pointer to the list head.
- * @prefix: String to match.
- * @c: The next character after the prefix to match.
+ * @prefix: Prefix string to match.
+ * @c: The next character after the prefix to match (-1 to ignore).
  *
- * Return: Matching node or NULL.
+ * This function searches for a node in the linked list whose string starts
+ * with the specified prefix and, optionally, the next character after the
+ * prefix.
+ *
+ * Return: A pointer to the matching node or NULL if not found.
  */
-list_t *nodeStartsWith(list_t *node, char *prefix, char c)
+list_t *node_starts_with(list_t *node, char *prefix, char c)
 {
     char *p = NULL;
 
     while (node)
     {
-        p = startsWith(node->str, prefix);
+        p = starts_with(node->str, prefix);
         if (p && ((c == -1) || (*p == c)))
             return (node);
         node = node->next;
     }
+
     return (NULL);
 }
 
 /**
- * getNodeIndex - Gets the index of a node.
+ * get_node_index - Gets the index of a node in a linked list.
  * @head: Pointer to the list head.
  * @node: Pointer to the node.
  *
- * Return: Index of the node or -1.
+ * This function retrieves the index (position) of a node in the linked list.
+ *
+ * Return: The index of the node or -1 if the node is not found in the list.
  */
-ssize_t getNodeIndex(list_t *head, list_t *node)
+ssize_t get_node_index(list_t *head, list_t *node)
 {
     size_t i = 0;
 
@@ -117,5 +136,6 @@ ssize_t getNodeIndex(list_t *head, list_t *node)
         head = head->next;
         i++;
     }
+
     return (-1);
 }

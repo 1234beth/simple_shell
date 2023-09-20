@@ -1,12 +1,15 @@
 #include "shell.h"
 
 /**
- * getShellHistoryFile - Gets the shell history file.
- * @info: Parameter struct.
+ * get_history_file - Retrieve the path to the history file.
+ * @info: Pointer to the parameter struct.
  *
- * Return: Allocated string containing the history file.
+ * This function constructs and returns the full path to the history file
+ * based on the user's home directory and the predefined history file name.
+ *
+ * Return: A dynamically allocated string containing the history file path.
  */
-char *getShellHistoryFile(info_t *info)
+char *get_history_file(info_t *info)
 {
     char *buf, *dir;
 
@@ -16,7 +19,7 @@ char *getShellHistoryFile(info_t *info)
     buf = malloc(sizeof(char) * (_strlen(dir) + _strlen(HIST_FILE) + 2));
     if (!buf)
         return (NULL);
-    buf[0] = 0;
+    buf[0] = '\0';
     _strcpy(buf, dir);
     _strcat(buf, "/");
     _strcat(buf, HIST_FILE);
@@ -24,15 +27,18 @@ char *getShellHistoryFile(info_t *info)
 }
 
 /**
- * writeShellHistory - Creates a file or appends to an existing file for shell history.
- * @info: The parameter struct.
+ * write_history - Write the command history to a file.
+ * @info: Pointer to the parameter struct.
+ *
+ * This function creates a file or appends to an existing history file and
+ * writes the command history stored in the shell's history linked list to it.
  *
  * Return: 1 on success, -1 on failure.
  */
-int writeShellHistory(info_t *info)
+int write_history(info_t *info)
 {
     ssize_t fd;
-    char *filename = getShellHistoryFile(info);
+    char *filename = get_history_file(info);
     list_t *node = NULL;
 
     if (!filename)
@@ -42,6 +48,7 @@ int writeShellHistory(info_t *info)
     free(filename);
     if (fd == -1)
         return (-1);
+
     for (node = info->history; node; node = node->next)
     {
         _putsfd(node->str, fd);
@@ -53,17 +60,20 @@ int writeShellHistory(info_t *info)
 }
 
 /**
- * readShellHistory - Reads shell history from a file.
- * @info: The parameter struct.
+ * read_history - Read command history from a file.
+ * @info: Pointer to the parameter struct.
  *
- * Return: The number of history entries read or 0 on failure.
+ * This function reads command history from a file and populates the shell's
+ * history linked list with the retrieved commands.
+ *
+ * Return: The number of commands read from the history file or 0 on failure.
  */
-int readShellHistory(info_t *info)
+int read_history(info_t *info)
 {
     int i, last = 0, linecount = 0;
     ssize_t fd, rdlen, fsize = 0;
     struct stat st;
-    char *buf = NULL, *filename = getShellHistoryFile(info);
+    char *buf = NULL, *filename = get_history_file(info);
 
     if (!filename)
         return (0);
@@ -72,63 +82,84 @@ int readShellHistory(info_t *info)
     free(filename);
     if (fd == -1)
         return (0);
+
     if (!fstat(fd, &st))
         fsize = st.st_size;
+
     if (fsize < 2)
         return (0);
+
     buf = malloc(sizeof(char) * (fsize + 1));
     if (!buf)
         return (0);
+
     rdlen = read(fd, buf, fsize);
-    buf[fsize] = 0;
+    buf[fsize] = '\0';
+
     if (rdlen <= 0)
         return (free(buf), 0);
+
     close(fd);
+
     for (i = 0; i < fsize; i++)
+    {
         if (buf[i] == '\n')
         {
-            buf[i] = 0;
-            buildShellHistoryList(info, buf + last, linecount++);
+            buf[i] = '\0';
+            build_history_list(info, buf + last, linecount++);
             last = i + 1;
         }
+    }
+
     if (last != i)
-        buildShellHistoryList(info, buf + last, linecount++);
+        build_history_list(info, buf + last, linecount++);
+
     free(buf);
     info->histcount = linecount;
+
     while (info->histcount-- >= HIST_MAX)
-        deleteNodeAtIndex(&(info->history), 0);
-    renumberShellHistory(info);
+        delete_node_at_index(&(info->history), 0);
+
+    renumber_history(info);
     return (info->histcount);
 }
 
 /**
- * buildShellHistoryList - Adds an entry to the shell history linked list.
- * @info: Parameter struct.
- * @buf: Buffer.
- * @linecount: The history line count, histcount.
+ * build_history_list - Add an entry to the history linked list.
+ * @info: Pointer to the parameter struct.
+ * @buf: The command buffer to add to the history.
+ * @linecount: The line count or history count for the command.
+ *
+ * This function adds an entry to the shell's command history linked list,
+ * including the provided command buffer and its associated line count.
  *
  * Return: Always 0.
  */
-int buildShellHistoryList(info_t *info, char *buf, int linecount)
+int build_history_list(info_t *info, char *buf, int linecount)
 {
     list_t *node = NULL;
 
     if (info->history)
         node = info->history;
-    addNodeEnd(&node, buf, linecount);
+
+    add_node_end(&node, buf, linecount);
 
     if (!info->history)
         info->history = node;
+
     return (0);
 }
 
 /**
- * renumberShellHistory - Renumbers the shell history linked list after changes.
- * @info: Parameter struct.
+ * renumber_history - Renumber the history linked list after changes.
+ * @info: Pointer to the parameter struct.
  *
- * Return: The new histcount.
+ * This function renumbers the line counts of the commands in the history
+ * linked list to ensure they are consecutive after changes (e.g., deletion).
+ *
+ * Return: The new history count.
  */
-int renumberShellHistory(info_t *info)
+int renumber_history(info_t *info)
 {
     list_t *node = info->history;
     int i = 0;
@@ -138,5 +169,6 @@ int renumberShellHistory(info_t *info)
         node->num = i++;
         node = node->next;
     }
+
     return (info->histcount = i);
 }
